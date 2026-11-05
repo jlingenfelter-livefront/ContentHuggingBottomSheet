@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View {
+private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View {
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
 
@@ -56,7 +56,7 @@ struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View 
     }
 }
 
-struct ContentHuggingBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
+private struct ContentHuggingBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
@@ -107,6 +107,6 @@ extension View {
 #Preview {
     ContentHuggingBottomSheet {
         Color.blue
-            .frame(height: 2000)
+            .frame(height: 100)
     }
 }
