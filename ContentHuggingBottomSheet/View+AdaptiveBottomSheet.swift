@@ -52,7 +52,9 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
         }, action: { newValue in
             topInsetHeight = newValue.rounded()
         })
-        .modifier(AnimatedHeightDetent(height: totalHeight, isMeasured: isMeasured))
+        // Before the content is measured, the total is just the inset and footer, which
+        // change with the sheet's size; sizing to them causes a cyclic layout
+        .modifier(AnimatedHeightDetent(height: isMeasured ? totalHeight : 0))
     }
 
     /// The first measurement sets the initial detent and shouldn't animate up from zero;
@@ -67,12 +69,11 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
 @Animatable
 private struct AnimatedHeightDetent: ViewModifier {
     var height: CGFloat
-    @AnimatableIgnored var isMeasured: Bool
 
     private var detent: PresentationDetent {
         // Until the content has been measured, use a detent large enough for the
         // navigation bar to lay out, so UIKit doesn't break constraints
-        guard isMeasured else {
+        guard height > 0 else {
             return .large
         }
 
