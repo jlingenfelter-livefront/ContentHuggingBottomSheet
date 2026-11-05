@@ -14,7 +14,7 @@ struct ContentView: View {
                 VStack(spacing: 0) {
                     Color.orange.frame(height: 100)
                     Color.blue.frame(height: 400)
-                    Color.purple.frame(height: 40)
+                    Color.purple.frame(height: 50)
                 }
                 .navigationTitle("Sheet")
                 .navigationBarTitleDisplayMode(.inline)
@@ -35,7 +35,6 @@ struct ContentView: View {
                 .background(.indigo)
                 .clipShape(Capsule())
                 .scenePadding(.horizontal)
-                .background(Color.mint)
             }
         )
     }

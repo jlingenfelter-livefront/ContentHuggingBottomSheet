@@ -38,18 +38,16 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
         NavigationStack {
             ScrollView {
                 sheetContent()
-                    .measuring(\.height, assign: $contentHeight)
+                    .measuring(\.height, in: .local, assign: $contentHeight)
             }
             .safeAreaBar(edge: .bottom, spacing: 0, content: {
                 footerContent()
-                    .measuring(\.height, assign: $footerHeight)
+                    .measuring(\.height, in: .local, assign: $footerHeight)
             })
             .onGeometryChange(for: CGFloat.self, of: { geometry in
-                geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+                geometry.safeAreaInsets.top
             }, action: { newValue in
-                if newValue.rounded(.up) > verticalInsetHeight.rounded(.up) {
-                    verticalInsetHeight = newValue.rounded(.up)
-                }
+                verticalInsetHeight = newValue.rounded()
             })
         }
         .presentationDetents([.height(totalHeight)])
