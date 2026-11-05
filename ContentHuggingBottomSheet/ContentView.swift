@@ -3,6 +3,7 @@ import Playgrounds
 
 struct ContentView: View {
     @State var isPresented: Bool = false
+    @State private var isExpanded: Bool = false
 
     var body: some View {
         Button("Press me") {
@@ -13,9 +14,16 @@ struct ContentView: View {
             content: {
                 VStack(spacing: 0) {
                     Color.orange.frame(height: 100)
-                    Color.blue.frame(height: 200)
+                    // Toggled without an animation so any animation you see
+                    // comes from the sheet's height handling, not this toggle
+                    Button(isExpanded ? "Collapse" : "Expand") {
+                        isExpanded.toggle()
+                    }
+                    .frame(maxWidth: .infinity, minHeight: 44)
+                    Color.blue.frame(height: isExpanded ? 400 : 200)
                     Color.purple.frame(height: 50)
                 }
+                .animation(.snappy, value: isExpanded)
                 .navigationTitle("Sheet")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

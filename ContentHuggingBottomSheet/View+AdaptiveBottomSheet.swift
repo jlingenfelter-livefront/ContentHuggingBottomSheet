@@ -19,11 +19,8 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
         contentHeight + topInsetHeight + footerHeight
     }
 
-    private var detent: PresentationDetent {
-        // Until the content has been measured, use a detent large enough for the
-        // navigation bar to lay out, so UIKit doesn't break constraints
-        guard contentHeight > 0 else { return .large }
-        return .height(totalHeight)
+    private var isMeasured: Bool {
+        contentHeight > 0
     }
 
     init(
@@ -44,18 +41,46 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     var body: some View {
         ScrollView {
             sheetContent()
-                .measuring(\.height, in: .local, assign: $contentHeight)
+                .measuring(\.height, in: .local, assign: animatedOnceMeasured($contentHeight))
         }
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
-                .measuring(\.height, in: .local, assign: $footerHeight)
+                .measuring(\.height, in: .local, assign: animatedOnceMeasured($footerHeight))
         })
         .onGeometryChange(for: CGFloat.self, of: { geometry in
             geometry.safeAreaInsets.top
         }, action: { newValue in
             topInsetHeight = newValue.rounded()
         })
-        .presentationDetents([detent])
+        .modifier(AnimatedHeightDetent(height: totalHeight, isMeasured: isMeasured))
+    }
+
+    /// The first measurement sets the initial detent and shouldn't animate up from zero;
+    /// later changes animate so `AnimatedHeightDetent` interpolates the height.
+    private func animatedOnceMeasured(_ binding: Binding<CGFloat>) -> Binding<CGFloat> {
+        isMeasured ? binding.animation() : binding
+    }
+}
+
+/// Applies a height detent that SwiftUI interpolates frame by frame
+/// whenever `height` changes inside an animation.
+@Animatable
+private struct AnimatedHeightDetent: ViewModifier {
+    var height: CGFloat
+    @AnimatableIgnored var isMeasured: Bool
+
+    private var detent: PresentationDetent {
+        // Until the content has been measured, use a detent large enough for the
+        // navigation bar to lay out, so UIKit doesn't break constraints
+        guard isMeasured else {
+            return .large
+        }
+
+        return .height(height)
+    }
+
+    func body(content: Content) -> some View {
+        content.presentationDetents([detent])
     }
 }
 
