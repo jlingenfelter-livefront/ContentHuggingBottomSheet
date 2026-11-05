@@ -41,11 +41,11 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     var body: some View {
         ScrollView {
             sheetContent()
-                .measuring(\.height, in: .local, assign: animatedOnceMeasured($contentHeight))
+                .measuring(\.height, in: .local, assign: $contentHeight.conditionalAnimation(when: isMeasured))
         }
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
-                .measuring(\.height, in: .local, assign: animatedOnceMeasured($footerHeight))
+                .measuring(\.height, in: .local, assign: $footerHeight.conditionalAnimation(when: isMeasured))
         })
         .onGeometryChange(for: CGFloat.self, of: { geometry in
             geometry.safeAreaInsets.top
@@ -55,12 +55,6 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
         // Before the content is measured, the total is just the inset and footer, which
         // change with the sheet's size; sizing to them causes a cyclic layout
         .modifier(AnimatedHeightDetent(height: isMeasured ? totalHeight : 0))
-    }
-
-    /// The first measurement sets the initial detent and shouldn't animate up from zero;
-    /// later changes animate so `AnimatedHeightDetent` interpolates the height.
-    private func animatedOnceMeasured(_ binding: Binding<CGFloat>) -> Binding<CGFloat> {
-        isMeasured ? binding.animation() : binding
     }
 }
 
