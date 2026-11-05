@@ -11,7 +11,7 @@ struct ContentView: View {
         .contentHuggingBottomSheet(
             isPresented: $isPresented,
             content: {
-                VStack {
+                VStack(spacing: 0) {
                     Color.orange.frame(height: 100)
                     Color.blue.frame(height: 400)
                     Color.purple.frame(height: 40)
@@ -21,16 +21,21 @@ struct ContentView: View {
                 .toolbar {
                     ToolbarItem {
                         Button("", systemImage: "star") {
-
+                            isPresented = false
                         }
                     }
                 }
             },
             footer: {
                 Button("Hello") {
-
+                    isPresented = false
                 }
+                .padding(.vertical, 30)
+                .frame(maxWidth: .infinity)
                 .background(.indigo)
+                .clipShape(Capsule())
+                .scenePadding(.horizontal)
+                .background(Color.mint)
             }
         )
     }

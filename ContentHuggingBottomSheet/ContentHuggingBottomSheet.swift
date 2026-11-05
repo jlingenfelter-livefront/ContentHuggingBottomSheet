@@ -13,9 +13,10 @@ struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View 
 
     @State private var contentHeight: CGFloat = .zero
     @State private var verticalInsetHeight: CGFloat = .zero
+    @State private var footerHeight: CGFloat = .zero
 
     private var totalHeight: CGFloat {
-        contentHeight + verticalInsetHeight
+        contentHeight + verticalInsetHeight + footerHeight
     }
 
     init(
@@ -38,26 +39,19 @@ struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View 
             ScrollView {
                 sheetContent()
                     .measuring(\.height, assign: $contentHeight)
-                    .onGeometryChange(for: CGFloat.self, of: { geometry in
-                        geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
-                    }, action: { newValue in
-                        if newValue.rounded(.up) > verticalInsetHeight.rounded(.up) {
-                            verticalInsetHeight = newValue.rounded(.up)
-                        }
-                    })
             }
-            .ignoresSafeArea(edges: .bottom)
-            .safeAreaBar(edge: .bottom, spacing: 0, content: footerContent)
-//            .ignoresSafeArea(edges: .bottom)
-//            .onGeometryChange(for: CGFloat.self, of: { geometry in
-//                geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
-//            }, action: { newValue in
-//                if newValue.rounded(.up) > verticalInsetHeight.rounded(.up) {
-//                    verticalInsetHeight = newValue.rounded(.up)
-//                }
-//            })
+            .safeAreaBar(edge: .bottom, spacing: 0, content: {
+                footerContent()
+                    .measuring(\.height, assign: $footerHeight)
+            })
+            .onGeometryChange(for: CGFloat.self, of: { geometry in
+                geometry.safeAreaInsets.top + geometry.safeAreaInsets.bottom
+            }, action: { newValue in
+                if newValue.rounded(.up) > verticalInsetHeight.rounded(.up) {
+                    verticalInsetHeight = newValue.rounded(.up)
+                }
+            })
         }
-        .frame(maxHeight: totalHeight)
         .presentationDetents([.height(totalHeight)])
     }
 }
