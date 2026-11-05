@@ -13,7 +13,7 @@ struct ContentView: View {
             content: {
                 VStack(spacing: 0) {
                     Color.orange.frame(height: 100)
-                    Color.blue.frame(height: 400)
+                    Color.blue.frame(height: 200)
                     Color.purple.frame(height: 50)
                 }
                 .navigationTitle("Sheet")

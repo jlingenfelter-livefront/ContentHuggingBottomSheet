@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View>: View {
+private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: View {
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
 
@@ -42,21 +42,19 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
     }
 
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                sheetContent()
-                    .measuring(\.height, in: .local, assign: $contentHeight)
-            }
-            .safeAreaBar(edge: .bottom, spacing: 0, content: {
-                footerContent()
-                    .measuring(\.height, in: .local, assign: $footerHeight)
-            })
-            .onGeometryChange(for: CGFloat.self, of: { geometry in
-                geometry.safeAreaInsets.top
-            }, action: { newValue in
-                topInsetHeight = newValue.rounded()
-            })
+        ScrollView {
+            sheetContent()
+                .measuring(\.height, in: .local, assign: $contentHeight)
         }
+        .safeAreaBar(edge: .bottom, spacing: 0, content: {
+            footerContent()
+                .measuring(\.height, in: .local, assign: $footerHeight)
+        })
+        .onGeometryChange(for: CGFloat.self, of: { geometry in
+            geometry.safeAreaInsets.top
+        }, action: { newValue in
+            topInsetHeight = newValue.rounded()
+        })
         .presentationDetents([detent])
     }
 }
@@ -87,7 +85,9 @@ private struct ContentHuggingBottomSheetModifier<SheetContent: View, FooterConte
 
     func body(content: Content) -> some View {
         content.sheet(isPresented: $isPresented) {
-            ContentHuggingBottomSheet(sheetContent: sheetContent, footerContent: footerContent)
+            NavigationStack {
+                AdaptiveSheetContent(sheetContent: sheetContent, footerContent: footerContent)
+            }
         }
     }
 }
@@ -110,7 +110,7 @@ extension View {
 }
 
 #Preview {
-    ContentHuggingBottomSheet {
+    AdaptiveSheetContent {
         Color.blue
             .frame(height: 100)
     }
