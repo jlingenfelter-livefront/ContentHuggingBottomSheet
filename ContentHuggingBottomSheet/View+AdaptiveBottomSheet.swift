@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// Scrolling sheet content with an optional pinned footer, sized to fit both.
 private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: View {
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
@@ -81,6 +82,7 @@ private struct AnimatedHeightDetent: ViewModifier {
     }
 }
 
+/// Presents `AdaptiveSheetContent` in a sheet, inside a `NavigationStack`.
 private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     @ContentBuilder let sheetContent: () -> SheetContent
@@ -115,6 +117,14 @@ private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: Vi
 }
 
 extension View {
+    /// Presents a sheet whose height fits its content and animates as the content resizes.
+    ///
+    /// The content is in a `NavigationStack`, so it can set a navigation title and
+    /// toolbar; titles always display inline. Content taller than the screen scrolls.
+    ///
+    /// - Parameters:
+    ///   - isPresented: Whether the sheet is presented.
+    ///   - content: The sheet's content.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         @ContentBuilder content: @escaping () -> some View
@@ -122,6 +132,14 @@ extension View {
         self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, sheetContent: content))
     }
 
+    /// Presents a sheet whose height fits its content and footer, and animates as they resize.
+    ///
+    /// The footer stays pinned to the bottom while the content scrolls behind it.
+    ///
+    /// - Parameters:
+    ///   - isPresented: Whether the sheet is presented.
+    ///   - content: The sheet's scrolling content.
+    ///   - footer: A view pinned to the bottom of the sheet, such as a primary button.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         @ContentBuilder content: @escaping () -> some View,
