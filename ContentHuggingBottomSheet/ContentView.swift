@@ -14,8 +14,6 @@ struct ContentView: View {
             content: {
                 VStack(spacing: 0) {
                     Color.orange.frame(height: 100)
-                    // Toggled without an animation so any animation you see
-                    // comes from the sheet's height handling, not this toggle
                     Button(isExpanded ? "Collapse" : "Expand") {
                         isExpanded.toggle()
                     }
