@@ -11,7 +11,7 @@ extension View {
     // Measure a value based on a KeyPath of a GeometryProxy
     func measuring(
         _ path: KeyPath<GeometryProxy, CGFloat>,
-        assign value: Binding<Double>
+        assign value: Binding<CGFloat>
     ) -> some View {
         self.onGeometryChange(for: CGFloat.self, of: { geometry in
             geometry[keyPath: path]
