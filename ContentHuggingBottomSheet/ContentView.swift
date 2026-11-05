@@ -8,7 +8,7 @@ struct ContentView: View {
         Button("Press me") {
             isPresented = true
         }
-        .contentHuggingBottomSheet(
+        .adaptiveBottomSheet(
             isPresented: $isPresented,
             content: {
                 VStack(spacing: 0) {

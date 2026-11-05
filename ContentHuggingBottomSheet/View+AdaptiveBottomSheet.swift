@@ -1,5 +1,5 @@
 //
-//  ContentHuggingBottomSheet.swift
+//  View+AdaptiveBottomSheet.swift
 //  MyApp
 //
 //  Created by Jo Lingenfelter on 11/3/26.
@@ -59,7 +59,7 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     }
 }
 
-private struct ContentHuggingBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
+private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
     @Binding var isPresented: Bool
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
@@ -93,19 +93,19 @@ private struct ContentHuggingBottomSheetModifier<SheetContent: View, FooterConte
 }
 
 extension View {
-    func contentHuggingBottomSheet(
+    func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         @ContentBuilder content: @escaping () -> some View
     ) -> some View {
-        self.modifier(ContentHuggingBottomSheetModifier(isPresented: isPresented, sheetContent: content))
+        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, sheetContent: content))
     }
 
-    func contentHuggingBottomSheet(
+    func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         @ContentBuilder content: @escaping () -> some View,
         @ContentBuilder footer: @escaping () -> some View,
     ) -> some View {
-        self.modifier(ContentHuggingBottomSheetModifier(isPresented: isPresented, sheetContent: content, footerContent: footer))
+        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, sheetContent: content, footerContent: footer))
     }
 }
 
