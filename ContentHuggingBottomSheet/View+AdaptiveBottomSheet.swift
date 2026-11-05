@@ -55,6 +55,8 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
         // Before the content is measured, the total is just the inset and footer, which
         // change with the sheet's size; sizing to them causes a cyclic layout
         .modifier(AnimatedHeightDetent(height: isMeasured ? totalHeight : 0))
+        // A large title collapsing on scroll would shrink the top inset and jerk the sheet
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 
