@@ -19,6 +19,13 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
         contentHeight + topInsetHeight + footerHeight
     }
 
+    private var detent: PresentationDetent {
+        // Until the content has been measured, use a detent large enough for the
+        // navigation bar to lay out, so UIKit doesn't break constraints
+        guard contentHeight > 0 else { return .large }
+        return .height(totalHeight)
+    }
+
     init(
         @ContentBuilder sheetContent: @escaping () -> SheetContent,
         @ContentBuilder footerContent: @escaping () -> FooterContent
@@ -50,7 +57,7 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
                 topInsetHeight = newValue.rounded()
             })
         }
-        .presentationDetents([.height(totalHeight)])
+        .presentationDetents([detent])
     }
 }
 
