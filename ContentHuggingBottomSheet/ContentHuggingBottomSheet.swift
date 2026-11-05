@@ -12,11 +12,11 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
     @ContentBuilder let footerContent: () -> FooterContent
 
     @State private var contentHeight: CGFloat = .zero
-    @State private var verticalInsetHeight: CGFloat = .zero
+    @State private var topInsetHeight: CGFloat = .zero
     @State private var footerHeight: CGFloat = .zero
 
     private var totalHeight: CGFloat {
-        contentHeight + verticalInsetHeight + footerHeight
+        contentHeight + topInsetHeight + footerHeight
     }
 
     init(
@@ -47,7 +47,7 @@ private struct ContentHuggingBottomSheet<SheetContent: View, FooterContent: View
             .onGeometryChange(for: CGFloat.self, of: { geometry in
                 geometry.safeAreaInsets.top
             }, action: { newValue in
-                verticalInsetHeight = newValue.rounded()
+                topInsetHeight = newValue.rounded()
             })
         }
         .presentationDetents([.height(totalHeight)])

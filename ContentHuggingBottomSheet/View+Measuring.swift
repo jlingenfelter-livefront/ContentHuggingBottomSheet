@@ -24,7 +24,7 @@ extension View {
     // Measure a value based on a KeyPath from CGRect -> CGFloat
     func measuring(
         _ path: KeyPath<CGRect, CGFloat>,
-        in coordinateSpace: CoordinateSpace = .global,
+        in coordinateSpace: CoordinateSpace = .local,
         assign value: Binding<CGFloat>
     ) -> some View {
         self.onGeometryChange(for: CGFloat.self, of: { geometry in
