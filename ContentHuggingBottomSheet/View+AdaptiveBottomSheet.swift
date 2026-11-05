@@ -41,11 +41,11 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     var body: some View {
         ScrollView {
             sheetContent()
-                .measuring(\.height, in: .local, assign: $contentHeight.conditionalAnimation(when: isMeasured))
+                .measuring(\.height, in: .local, assign: $contentHeight.conditionalAnimation(.snappy, when: isMeasured))
         }
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
-                .measuring(\.height, in: .local, assign: $footerHeight.conditionalAnimation(when: isMeasured))
+                .measuring(\.height, in: .local, assign: $footerHeight.conditionalAnimation(.snappy, when: isMeasured))
         })
         .onGeometryChange(for: CGFloat.self, of: { geometry in
             geometry.safeAreaInsets.top
