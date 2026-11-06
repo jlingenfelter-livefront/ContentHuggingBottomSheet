@@ -142,6 +142,9 @@ extension View {
     ///   the inline default, and the sheet resizes as the large title scrolls into the
     ///   navigation bar.
     ///
+    /// - Important:`presentationDetents(_:)` should NOT be set on the content. This method
+    /// handles measuring the content and setting the detents internally.
+    ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
     ///   - animation: The animation for the sheet's height changes. Match the animation
@@ -163,6 +166,9 @@ extension View {
     /// - Note: Setting `navigationBarTitleDisplayMode(.large)` on the content overrides
     ///   the inline default, and the sheet resizes as the large title scrolls into the
     ///   navigation bar.
+    ///
+    /// - Important:`presentationDetents(_:)` should NOT be set on the content. This method
+    /// handles measuring the content and setting the detents internally.
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
