@@ -53,7 +53,7 @@ struct PreviewSheetContent: View {
             }
             .buttonStyle(.glassProminent)
             .controlSize(.large)
-            .scenePadding()
+            .scenePadding(.horizontal)
         }
     )
 }

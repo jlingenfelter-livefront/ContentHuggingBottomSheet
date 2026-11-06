@@ -20,7 +20,7 @@ import SwiftUI
                     }
                     .buttonStyle(.glassProminent)
                     .controlSize(.large)
-                    .scenePadding()
+                    .scenePadding(.horizontal)
                 }
             )
         }
