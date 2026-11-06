@@ -9,6 +9,7 @@ import SwiftUI
 
 /// Scrolling sheet content with an optional pinned footer, sized to fit both.
 private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: View {
+    let animation: Animation?
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
 
@@ -25,16 +26,20 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     }
 
     init(
+        animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent,
         @ContentBuilder footerContent: @escaping () -> FooterContent
     ) {
+        self.animation = animation
         self.sheetContent = sheetContent
         self.footerContent = footerContent
     }
 
     init(
+        animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent
     ) where FooterContent == EmptyView {
+        self.animation = animation
         self.sheetContent = sheetContent
         self.footerContent = { EmptyView() }
     }
@@ -42,12 +47,12 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
     var body: some View {
         ScrollView {
             sheetContent()
-                .fixedSize(horizontal: false, vertical: true)
-                .measuringAnimatedValue(\.height, in: .local, assign: $contentHeight, animation: .snappy)
+                .measuringAnimatedValue(\.height, in: .local, assign: $contentHeight, animation: animation)
         }
+        .scrollBounceBehavior(.basedOnSize)
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
-                .measuringAnimatedValue(\.height, in: .local, assign: $footerHeight, animation: .snappy)
+                .measuringAnimatedValue(\.height, in: .local, assign: $footerHeight, animation: animation)
         })
         .onGeometryChange(for: CGFloat.self, of: { geometry in
             geometry.safeAreaInsets.top
@@ -68,42 +73,47 @@ private struct AdaptiveSheetContent<SheetContent: View, FooterContent: View>: Vi
 private struct AnimatedHeightDetent: ViewModifier {
     var height: CGFloat
 
-    private var detent: PresentationDetent {
+    private var detents: Set<PresentationDetent> {
         // Until the content has been measured, use a detent large enough for the
         // navigation bar to lay out, so UIKit doesn't break constraints
         guard height > 0 else {
-            return .medium
+            return [.medium, .large]
         }
 
-        return .height(height)
+        return [.height(height)]
     }
 
     func body(content: Content) -> some View {
-        content.presentationDetents([detent])
+        content.presentationDetents(detents)
     }
 }
 
 /// Presents `AdaptiveSheetContent` in a sheet, inside a `NavigationStack`.
 private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
     @Binding var isPresented: Bool
+    let animation: Animation?
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
 
     init(
         isPresented: Binding<Bool>,
+        animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent,
         @ContentBuilder footerContent: @escaping () -> FooterContent
     ) {
         _isPresented = isPresented
+        self.animation = animation
         self.sheetContent = sheetContent
         self.footerContent = footerContent
     }
 
     init(
         isPresented: Binding<Bool>,
+        animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent
     ) where FooterContent == EmptyView {
         _isPresented = isPresented
+        self.animation = animation
         self.sheetContent = sheetContent
         self.footerContent = { EmptyView() }
     }
@@ -111,7 +121,11 @@ private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: Vi
     func body(content: Content) -> some View {
         content.sheet(isPresented: $isPresented) {
             NavigationStack {
-                AdaptiveSheetContent(sheetContent: sheetContent, footerContent: footerContent)
+                AdaptiveSheetContent(
+                    animation: animation,
+                    sheetContent: sheetContent,
+                    footerContent: footerContent
+                )
             }
         }
     }
@@ -125,12 +139,16 @@ extension View {
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
+    ///   - animation: The animation for the sheet's height changes. Match the animation
+    ///     the content resizes with, so the sheet and content move together. Pass `nil`
+    ///     to resize the sheet immediately.
     ///   - content: The sheet's content.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
+        animation: Animation? = .snappy,
         @ContentBuilder content: @escaping () -> some View
     ) -> some View {
-        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, sheetContent: content))
+        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, animation: animation, sheetContent: content))
     }
 
     /// Presents a sheet whose height fits its content and footer, and animates as they resize.
@@ -139,14 +157,25 @@ extension View {
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
+    ///   - animation: The animation for the sheet's height changes. Match the animation
+    ///     the content and footer resize with, so the sheet and content move together.
+    ///     Pass `nil` to resize the sheet immediately.
     ///   - content: The sheet's scrolling content.
     ///   - footer: A view pinned to the bottom of the sheet, such as a primary button.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
+        animation: Animation? = .snappy,
         @ContentBuilder content: @escaping () -> some View,
         @ContentBuilder footer: @escaping () -> some View,
     ) -> some View {
-        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, sheetContent: content, footerContent: footer))
+        self.modifier(
+            AdaptiveBottomSheetModifier(
+                isPresented: isPresented,
+                animation: animation,
+                sheetContent: content,
+                footerContent: footer
+            )
+        )
     }
 }
 
