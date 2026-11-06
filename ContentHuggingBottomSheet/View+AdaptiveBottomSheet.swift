@@ -74,8 +74,9 @@ private struct AnimatedHeightDetent: ViewModifier {
     var height: CGFloat
 
     private var detents: Set<PresentationDetent> {
-        // Until the content has been measured, use a detent large enough for the
-        // navigation bar to lay out, so UIKit doesn't break constraints
+        // Until the content has a measured height, or if it never reports one, fall
+        // back to flexible detents the user can drag between. Both are large enough
+        // for the navigation bar to lay out, so UIKit doesn't break constraints
         guard height > 0 else {
             return [.medium, .large]
         }
