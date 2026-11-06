@@ -135,7 +135,11 @@ extension View {
     /// Presents a sheet whose height fits its content and animates as the content resizes.
     ///
     /// The content is in a `NavigationStack`, so it can set a navigation title and
-    /// toolbar; titles always display inline. Content taller than the screen scrolls.
+    /// toolbar; titles display inline by default. Content taller than the screen scrolls.
+    ///
+    /// - Note: Setting `navigationBarTitleDisplayMode(.large)` on the content overrides
+    ///   the inline default, and the sheet resizes as the large title scrolls into the
+    ///   navigation bar.
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
@@ -154,6 +158,10 @@ extension View {
     /// Presents a sheet whose height fits its content and footer, and animates as they resize.
     ///
     /// The footer stays pinned to the bottom while the content scrolls behind it.
+    ///
+    /// - Note: Setting `navigationBarTitleDisplayMode(.large)` on the content overrides
+    ///   the inline default, and the sheet resizes as the large title scrolls into the
+    ///   navigation bar.
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
