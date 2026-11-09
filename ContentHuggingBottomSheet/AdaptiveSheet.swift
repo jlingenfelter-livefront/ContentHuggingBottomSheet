@@ -56,8 +56,8 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
                 .fixedSize(horizontal: false, vertical: true)
                 .measuringAnimatedValue(\.height, in: .local, assign: $footerHeight, animation: animation)
         })
-        .onGeometryChange(for: CGFloat.self, of: { geometry in
-            geometry.safeAreaInsets.top
+        .onGeometryChange(for: CGFloat.self, of: {
+            $0.safeAreaInsets.top
         }, action: { newValue in
             topInsetHeight = newValue.rounded()
         })
