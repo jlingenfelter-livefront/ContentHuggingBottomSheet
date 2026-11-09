@@ -9,9 +9,12 @@ import SwiftUI
 
 /// Steps through content inside one `AdaptiveSheet`, in a `NavigationStack`, so the
 /// sheet animates between each step's height.
+///
+/// Step changes and the sheet's resize both use `animation`, so set `step` directly
+/// rather than inside `withAnimation`. Pass `nil` to change steps and resize immediately.
 struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: View {
     let step: Step
-    let animation: Animation?
+    var animation: Animation? = .snappy
     @ContentBuilder let content: (Step) -> StepContent
     @ContentBuilder let footer: (Step) -> FooterContent
 
@@ -31,6 +34,9 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
                 // Keeps its identity across steps, so it updates in place
                 footer(step)
             }
+            // Drives step changes with the same animation the sheet resizes with,
+            // overriding any animation the change arrives in
+            .animation(animation, value: step)
         }
     }
 }

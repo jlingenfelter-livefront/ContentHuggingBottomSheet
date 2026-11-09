@@ -15,7 +15,7 @@ struct PreviewNotificationFlow: View {
     @State private var selection: Set<PreviewNotification> = [.classReminders, .waitlistUpdates]
 
     var body: some View {
-        AdaptiveFlow(step: step, animation: .snappy) { current in
+        AdaptiveFlow(step: step) { current in
             Group {
                 switch current {
                 case .intro:
@@ -32,9 +32,7 @@ struct PreviewNotificationFlow: View {
                 if let previous = current.previous {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Back", systemImage: "chevron.backward") {
-                            withAnimation(.snappy) {
-                                step = previous
-                            }
+                            step = previous
                         }
                     }
                 } else if current == .intro {
@@ -49,9 +47,7 @@ struct PreviewNotificationFlow: View {
             // One button for every step, so only its title and action change
             Button {
                 if let next = current.next {
-                    withAnimation(.snappy) {
-                        step = next
-                    }
+                    step = next
                 } else {
                     dismiss()
                 }

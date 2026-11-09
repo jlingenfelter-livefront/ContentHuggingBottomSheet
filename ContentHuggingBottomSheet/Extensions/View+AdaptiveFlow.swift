@@ -31,10 +31,9 @@ extension View {
     /// Presents a sheet that steps through content, fitting its height to each step
     /// and animating between them.
     ///
-    /// Change `step` inside an animation matching `animation`, so the content
-    /// transition and the sheet's resize move together. The content is in a
-    /// `NavigationStack`, so each step can set a navigation title and toolbar, such
-    /// as a back button.
+    /// Set `step` directly; the content transition and the sheet's resize both use
+    /// `animation`, so they move together. The content is in a `NavigationStack`, so
+    /// each step can set a navigation title and toolbar, such as a back button.
     ///
     /// - Important:`presentationDetents(_:)` should NOT be set on the content. This method
     /// handles measuring the content and setting the detents internally.
@@ -43,8 +42,8 @@ extension View {
     ///   - isPresented: Whether the sheet is presented.
     ///   - step: The current step. Reset it when the sheet is dismissed to start
     ///     the next presentation from the beginning.
-    ///   - animation: The animation for the sheet's height changes. Pass `nil` to
-    ///     resize the sheet immediately.
+    ///   - animation: The animation for step changes and the sheet's height changes.
+    ///     Pass `nil` to change steps and resize the sheet immediately.
     ///   - content: The scrolling content for a step.
     ///   - footer: A view pinned to the bottom of the sheet for a step. It keeps its
     ///     identity across steps, so a single button can change its title and action.
@@ -98,9 +97,7 @@ extension View {
             if let previous = current.previous {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Back", systemImage: "chevron.backward") {
-                        withAnimation(.snappy) {
-                            step = previous
-                        }
+                        step = previous
                     }
                 }
             } else if current == .intro {
@@ -115,9 +112,7 @@ extension View {
         // One button for every step, so only its title and action change
         Button {
             if let next = current.next {
-                withAnimation(.snappy) {
-                    step = next
-                }
+                step = next
             } else {
                 isPresented = false
             }
