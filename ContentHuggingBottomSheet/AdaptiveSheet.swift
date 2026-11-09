@@ -94,78 +94,24 @@ private struct AnimatedHeightDetent: ViewModifier {
     }
 }
 
-private enum PreviewStep {
-    case intro, details, moreDetails
-}
-
 #Preview {
     @Previewable @State var isPresentingSheet = false
-    @Previewable @State var step = PreviewStep.intro
 
     Button("Press me!") {
         isPresentingSheet = true
     }
-    .sheet(isPresented: $isPresentingSheet, onDismiss: { step = .intro }) {
+    .sheet(isPresented: $isPresentingSheet) {
         NavigationStack {
             AdaptiveSheet(
                 animation: .snappy,
                 sheetContent: {
-                    // Steps swap within one sheet, so the sheet animates between their
-                    // heights like any other content resize. A ZStack overlaps the steps
-                    // during the transition instead of stacking them
-                    ZStack(alignment: .top) {
-                        switch step {
-                        case .intro:
-                            PreviewSheetContent()
-                                .transition(.blurReplace)
-                        case .details:
-                            Color.orange
-                                .frame(height: 2000)
-                                .navigationTitle("Details")
-                                .toolbar {
-                                    ToolbarItem(placement: .cancellationAction) {
-                                        Button("Back", systemImage: "chevron.backward") {
-                                            withAnimation(.snappy) {
-                                                step = .intro
-                                            }
-                                        }
-                                    }
-                                }
-                                .transition(.blurReplace)
-                        case .moreDetails:
-                            Color.blue
-                                .frame(height: 200)
-                                .toolbar {
-                                    ToolbarItem(placement: .cancellationAction) {
-                                        Button("Back", systemImage: "chevron.backward") {
-                                            withAnimation(.snappy) {
-                                                step = .details
-                                            }
-                                        }
-                                    }
-                                }
-                        }
-                    }
+                    PreviewSheetContent()
                 },
                 footerContent: {
-                    switch step {
-                    case .intro, .details:
-                        Button("Next") {
-                            withAnimation(.snappy) {
-                                if step == .intro {
-                                    step = .details
-                                } else {
-                                    step = .moreDetails
-                                }
-                            }
-                        }
-                        .buttonStyle(.glassProminent)
-                    case .moreDetails:
-                        Button("Close") {
-                            isPresentingSheet = false
-                        }
-                        .buttonStyle(.glassProminent)
+                    Button("Close") {
+                        isPresentingSheet = false
                     }
+                    .buttonStyle(.glassProminent)
                 }
             )
         }
