@@ -50,6 +50,9 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
                 .measuringAnimatedValue(\.height, in: .local, assign: $contentHeight, animation: animation)
         }
         .scrollBounceBehavior(.basedOnSize)
+        // While the sheet animates to a new height, the content briefly overflows
+        // under the footer, which would make the edge effect flicker
+        .scrollEdgeEffectHidden(true, for: .bottom)
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
                 // Prevents an empty view or a view lacking an intrinsic size from stretching vertically to fill the the available space
@@ -88,5 +91,83 @@ private struct AnimatedHeightDetent: ViewModifier {
 
     func body(content: Content) -> some View {
         content.presentationDetents(detents)
+    }
+}
+
+private enum PreviewStep {
+    case intro, details, moreDetails
+}
+
+#Preview {
+    @Previewable @State var isPresentingSheet = false
+    @Previewable @State var step = PreviewStep.intro
+
+    Button("Press me!") {
+        isPresentingSheet = true
+    }
+    .sheet(isPresented: $isPresentingSheet, onDismiss: { step = .intro }) {
+        NavigationStack {
+            AdaptiveSheet(
+                animation: .snappy,
+                sheetContent: {
+                    // Steps swap within one sheet, so the sheet animates between their
+                    // heights like any other content resize. A ZStack overlaps the steps
+                    // during the transition instead of stacking them
+                    ZStack(alignment: .top) {
+                        switch step {
+                        case .intro:
+                            PreviewSheetContent()
+                                .transition(.blurReplace)
+                        case .details:
+                            Color.orange
+                                .frame(height: 2000)
+                                .navigationTitle("Details")
+                                .toolbar {
+                                    ToolbarItem(placement: .cancellationAction) {
+                                        Button("Back", systemImage: "chevron.backward") {
+                                            withAnimation(.snappy) {
+                                                step = .intro
+                                            }
+                                        }
+                                    }
+                                }
+                                .transition(.blurReplace)
+                        case .moreDetails:
+                            Color.blue
+                                .frame(height: 200)
+                                .toolbar {
+                                    ToolbarItem(placement: .cancellationAction) {
+                                        Button("Back", systemImage: "chevron.backward") {
+                                            withAnimation(.snappy) {
+                                                step = .details
+                                            }
+                                        }
+                                    }
+                                }
+                        }
+                    }
+                },
+                footerContent: {
+                    switch step {
+                    case .intro, .details:
+                        Button("Next") {
+                            withAnimation(.snappy) {
+                                if step == .intro {
+                                    step = .details
+                                } else {
+                                    step = .moreDetails
+                                }
+                            }
+                        }
+                        .buttonStyle(.glassProminent)
+                    case .moreDetails:
+                        Button("Close") {
+                            isPresentingSheet = false
+                        }
+                        .buttonStyle(.glassProminent)
+                    }
+                }
+            )
+        }
     }
 }
