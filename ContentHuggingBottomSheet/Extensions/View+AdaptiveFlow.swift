@@ -10,7 +10,7 @@ import SwiftUI
 /// Presents an `AdaptiveFlow` in a sheet.
 private struct AdaptiveFlowModifier<Step: Hashable, StepContent: View, FooterContent: View>: ViewModifier {
     @Binding var isPresented: Bool
-    @Binding var step: Step
+    let step: Step
     let animation: Animation?
     @ContentBuilder let stepContent: (Step) -> StepContent
     @ContentBuilder let footerContent: (Step) -> FooterContent
@@ -31,17 +31,19 @@ extension View {
     /// Presents a sheet that steps through content, fitting its height to each step
     /// and animating between them.
     ///
-    /// Set `step` directly; the content transition and the sheet's resize both use
-    /// `animation`, so they move together. The content is in a `NavigationStack`, so
-    /// each step can set a navigation title and toolbar, such as a back button.
+    /// Pass the current step from your own state and change that state directly; the
+    /// content transition and the sheet's resize both use `animation`, so they move
+    /// together. The content is in a `NavigationStack`, so each step can set a
+    /// navigation title and toolbar, such as a back button.
     ///
     /// - Important:`presentationDetents(_:)` should NOT be set on the content. This method
     /// handles measuring the content and setting the detents internally.
     ///
     /// - Parameters:
     ///   - isPresented: Whether the sheet is presented.
-    ///   - step: The current step. Reset it when the sheet is dismissed to start
-    ///     the next presentation from the beginning.
+    ///   - step: The current step. The flow only reads it, so reset the state it comes
+    ///     from when the sheet is dismissed to start the next presentation from the
+    ///     beginning.
     ///   - animation: The animation for step changes and the sheet's height changes.
     ///     Pass `nil` to change steps and resize the sheet immediately.
     ///   - content: The scrolling content for a step.
@@ -49,7 +51,7 @@ extension View {
     ///     identity across steps, so a single button can change its title and action.
     func adaptiveFlow<Step: Hashable>(
         isPresented: Binding<Bool>,
-        step: Binding<Step>,
+        step: Step,
         animation: Animation? = .snappy,
         @ContentBuilder content: @escaping (Step) -> some View,
         @ContentBuilder footer: @escaping (Step) -> some View
@@ -80,7 +82,7 @@ extension View {
             step = .intro
         }
     }
-    .adaptiveFlow(isPresented: $isPresented, step: $step) { current in
+    .adaptiveFlow(isPresented: $isPresented, step: step) { current in
         Group {
             switch current {
             case .intro:
