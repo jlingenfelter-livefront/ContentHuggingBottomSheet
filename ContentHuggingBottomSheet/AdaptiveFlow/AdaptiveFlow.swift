@@ -36,66 +36,12 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
 }
 
 #Preview {
-    @Previewable @State var isPresentingSheet = false
-    @Previewable @State var step = PreviewStep.intro
-    @Previewable @State var selection: Set<PreviewNotification> = [.classReminders, .waitlistUpdates]
+    @Previewable @State var isPresentingSheet = true
 
     Button("Set Up Notifications") {
         isPresentingSheet = true
     }
-    .onChange(of: isPresentingSheet) { _, isPresented in
-        // Start the next presentation from the first step
-        if !isPresented {
-            step = .intro
-        }
-    }
-    .adaptiveFlow(isPresented: $isPresentingSheet, step: $step) { current in
-        Group {
-            switch current {
-            case .intro:
-                PreviewIntroStep()
-                    .navigationTitle("Notifications")
-            case .choose:
-                PreviewChooseStep(selection: $selection)
-                    .navigationTitle("Choose Notifications")
-            case .done:
-                PreviewDoneStep(selection: selection)
-            }
-        }
-        .toolbar {
-            if let previous = current.previous {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Back", systemImage: "chevron.backward") {
-                        withAnimation(.snappy) {
-                            step = previous
-                        }
-                    }
-                }
-            } else if current == .intro {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Close", systemImage: "xmark") {
-                        isPresentingSheet = false
-                    }
-                }
-            }
-        }
-    } footer: { current in
-        // One button for every step, so only its title and action change
-        Button {
-            if let next = current.next {
-                withAnimation(.snappy) {
-                    step = next
-                }
-            } else {
-                isPresentingSheet = false
-            }
-        } label: {
-            Text(current.footerTitle)
-                .frame(maxWidth: .infinity)
-        }
-        .buttonStyle(.glassProminent)
-        .controlSize(.large)
-        .disabled(current == .choose && selection.isEmpty)
-        .scenePadding(.horizontal)
+    .sheet(isPresented: $isPresentingSheet) {
+        PreviewNotificationFlow()
     }
 }
