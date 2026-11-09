@@ -74,7 +74,12 @@ extension View {
         animation: Animation? = .snappy,
         @ContentBuilder content: @escaping () -> some View
     ) -> some View {
-        self.modifier(AdaptiveBottomSheetModifier(isPresented: isPresented, animation: animation, sheetContent: content))
+        self.modifier(
+            AdaptiveBottomSheetModifier(
+                isPresented: isPresented,
+                animation: animation,
+                sheetContent: content)
+        )
     }
 
     /// Presents a sheet whose height fits its content and footer, and animates as they resize.

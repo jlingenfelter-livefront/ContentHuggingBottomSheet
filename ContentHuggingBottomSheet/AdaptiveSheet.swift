@@ -13,16 +13,16 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
     @ContentBuilder let sheetContent: () -> SheetContent
     @ContentBuilder let footerContent: () -> FooterContent
 
-    @State private var contentHeight: CGFloat = .zero
-    @State private var topInsetHeight: CGFloat = .zero
-    @State private var footerHeight: CGFloat = .zero
+    @State private var contentHeight: CGFloat?
+    @State private var topInsetHeight: CGFloat?
+    @State private var footerHeight: CGFloat?
 
-    private var totalHeight: CGFloat {
-        contentHeight + topInsetHeight + footerHeight
-    }
+    private var totalHeight: CGFloat? {
+        guard let contentHeight, let footerHeight, let topInsetHeight else {
+            return nil
+        }
 
-    private var isMeasured: Bool {
-        contentHeight > 0
+        return contentHeight + topInsetHeight + footerHeight
     }
 
     init(
@@ -52,6 +52,8 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         .scrollBounceBehavior(.basedOnSize)
         .safeAreaBar(edge: .bottom, spacing: 0, content: {
             footerContent()
+                // Prevents an empty view or a view lacking an intrinsic size from stretching vertically to fill the the available space
+                .fixedSize(horizontal: false, vertical: true)
                 .measuringAnimatedValue(\.height, in: .local, assign: $footerHeight, animation: animation)
         })
         .onGeometryChange(for: CGFloat.self, of: { geometry in
@@ -61,7 +63,7 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         })
         // Before the content is measured, the total is just the inset and footer, which
         // change with the sheet's size; sizing to them causes a cyclic layout
-        .modifier(AnimatedHeightDetent(height: isMeasured ? totalHeight : 0))
+        .modifier(AnimatedHeightDetent(height: totalHeight ?? 0))
         // A large title collapsing on scroll would shrink the top inset and jerk the sheet
         .navigationBarTitleDisplayMode(.inline)
     }

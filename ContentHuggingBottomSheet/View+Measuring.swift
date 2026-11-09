@@ -53,7 +53,7 @@ extension View {
     func measuringAnimatedValue(
         _ path: KeyPath<CGRect, CGFloat>,
         in coordinateSpace: CoordinateSpace = .local,
-        assign value: Binding<CGFloat>,
+        assign value: Binding<CGFloat?>,
         animation: Animation? = .default,
         whileUnchanged stable: KeyPath<CGRect, CGFloat> = \.width
     ) -> some View {
@@ -77,7 +77,7 @@ private struct AnimatedMeasurement: ViewModifier {
     let path: KeyPath<CGRect, CGFloat>
     let stablePath: KeyPath<CGRect, CGFloat>
     let coordinateSpace: CoordinateSpace
-    let value: Binding<CGFloat>
+    let value: Binding<CGFloat?>
     let animation: Animation?
 
     // Nil until the first measurement, so that one never animates
