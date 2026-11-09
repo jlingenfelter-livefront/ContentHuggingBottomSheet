@@ -10,7 +10,7 @@ import SwiftUI
             }
             .adaptiveBottomSheet(
                 isPresented: $isPresented,
-                content: { PreviewSheetContent(isPresented: $isPresented) },
+                content: { PreviewSheetContent() },
                 footer: {
                     Button {
                         isPresented = false

@@ -1,7 +1,9 @@
 import SwiftUI
 
 struct PreviewSheetContent: View {
-    @Binding var isPresented: Bool
+    @Environment(\.dismiss)
+    private var dismiss
+
     @State private var showsDetails = false
 
     var body: some View {
@@ -28,7 +30,7 @@ struct PreviewSheetContent: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Close", systemImage: "xmark") {
-                    isPresented = false
+                    dismiss()
                 }
             }
         }
@@ -43,7 +45,7 @@ struct PreviewSheetContent: View {
     }
     .adaptiveBottomSheet(
         isPresented: $isPresented,
-        content: { PreviewSheetContent(isPresented: $isPresented) },
+        content: { PreviewSheetContent() },
         footer: {
             Button {
                 isPresented = false
