@@ -7,50 +7,36 @@
 
 import SwiftUI
 
-extension View {
+extension Backport where Content: View {
     /// Uses `safeAreaBar` when available so scroll edge effects extend beneath the content,
     /// falling back to `safeAreaInset` on earlier OS versions.
-    ///
-    /// - Parameter fallbackBackground: Applied behind `content` only in the `safeAreaInset` fallback,
-    ///   which has no scroll edge effect to separate the content from what scrolls beneath it.
     @ViewBuilder
-    func safeAreaContent<Content: View>(
+    func safeAreaBar<BarContent: View>(
         edge: VerticalEdge,
         alignment: HorizontalAlignment = .center,
         spacing: CGFloat? = nil,
-        fallbackBackground: Color? = nil,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> BarContent
     ) -> some View {
         if #available(iOS 26.0, *) {
-            safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
         } else {
-            safeAreaInset(edge: edge, alignment: alignment, spacing: spacing) {
-                content()
-                    .background(fallbackBackground ?? .clear)
-            }
+            self.content.safeAreaInset(edge: edge, alignment: alignment, spacing: spacing, content: content)
         }
     }
 
     /// Uses `safeAreaBar` when available so scroll edge effects extend beneath the content,
     /// falling back to `safeAreaInset` on earlier OS versions.
-    ///
-    /// - Parameter fallbackBackground: Applied behind `content` only in the `safeAreaInset` fallback,
-    ///   which has no scroll edge effect to separate the content from what scrolls beneath it.
     @ViewBuilder
-    func safeAreaContent<Content: View>(
+    func safeAreaBar<BarContent: View>(
         edge: HorizontalEdge,
         alignment: VerticalAlignment = .center,
         spacing: CGFloat? = nil,
-        fallbackBackground: Color? = nil,
-        @ViewBuilder content: () -> Content
+        @ViewBuilder content: () -> BarContent
     ) -> some View {
         if #available(iOS 26.0, *) {
-            safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
         } else {
-            safeAreaInset(edge: edge, alignment: alignment, spacing: spacing) {
-                content()
-                    .background(fallbackBackground ?? .clear)
-            }
+            self.content.safeAreaInset(edge: edge, alignment: alignment, spacing: spacing, content: content)
         }
     }
 }

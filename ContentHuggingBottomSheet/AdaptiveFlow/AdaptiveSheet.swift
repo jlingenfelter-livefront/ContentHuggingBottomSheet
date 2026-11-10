@@ -89,7 +89,7 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         // While the sheet animates to a new height, the content briefly overflows
         // under the footer, which would make the edge effect flicker
         .backport.scrollEdgeEffectHidden(true, for: .bottom)
-        .safeAreaContent(edge: .bottom, spacing: 0) {
+        .backport.safeAreaBar(edge: .bottom, spacing: 0) {
             footerContent()
                 // Prevents an empty view or a view lacking an intrinsic size from stretching vertically to fill the the available space
                 .fixedSize(horizontal: false, vertical: true)
