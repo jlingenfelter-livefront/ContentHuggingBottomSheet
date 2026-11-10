@@ -21,8 +21,6 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
     var body: some View {
         NavigationStack {
             AdaptiveSheet(animation: animation) {
-                // Overlaps the outgoing and incoming steps during the transition,
-                // instead of stacking them
                 ZStack(alignment: .top) {
                     content(step)
                         // A new identity per step, so steps that use the same view
@@ -34,8 +32,6 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
                 // Keeps its identity across steps, so it updates in place
                 footer(step)
             }
-            // Drives step changes with the same animation the sheet resizes with,
-            // overriding any animation the change arrives in
             .animation(animation, value: step)
         }
     }
