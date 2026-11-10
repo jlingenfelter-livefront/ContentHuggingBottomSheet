@@ -1,5 +1,5 @@
 //
-//  View+SafeAreaContent.swift
+//  View+SafeAreaBar.swift
 //  ContentHuggingBottomSheet
 //
 //  Created by Jo Lingenfelter on 11/10/26.
