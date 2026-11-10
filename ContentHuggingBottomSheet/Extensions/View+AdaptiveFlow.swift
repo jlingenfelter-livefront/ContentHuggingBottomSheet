@@ -46,7 +46,7 @@ extension View {
     ///     beginning.
     ///   - animation: The animation for step changes and the sheet's height changes.
     ///     Pass `nil` to change steps and resize the sheet immediately.
-    ///   - content: The scrolling content for a step.
+    ///   - content: The content for each step. Scrolls if it doesn't fit.
     ///   - footer: A view pinned to the bottom of the sheet for a step. It keeps its
     ///     identity across steps, so a single button can change its title and action.
     func adaptiveFlow<Step: Hashable>(

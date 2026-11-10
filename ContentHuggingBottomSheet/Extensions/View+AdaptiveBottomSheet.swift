@@ -84,7 +84,7 @@ extension View {
 
     /// Presents a sheet whose height fits its content and footer, and animates as they resize.
     ///
-    /// The footer stays pinned to the bottom while the content scrolls behind it.
+    /// Content that doesn't fit scrolls beneath the pinned footer.
     ///
     /// - Note: Setting `navigationBarTitleDisplayMode(.large)` on the content overrides
     ///   the inline default, and the sheet resizes as the large title scrolls into the
@@ -98,7 +98,7 @@ extension View {
     ///   - animation: The animation for the sheet's height changes. Match the animation
     ///     the content and footer resize with, so the sheet and content move together.
     ///     Pass `nil` to resize the sheet immediately.
-    ///   - content: The sheet's scrolling content.
+    ///   - content: The sheet's content. Scrolls if it doesn't fit.
     ///   - footer: A view pinned to the bottom of the sheet, such as a primary button.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,

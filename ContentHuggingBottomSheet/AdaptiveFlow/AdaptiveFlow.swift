@@ -7,15 +7,27 @@
 
 import SwiftUI
 
-/// Steps through content inside one `AdaptiveSheet`, in a `NavigationStack`, so the
-/// sheet animates between each step's height.
+/// A multistep sheet that resizes to fit each step.
 ///
-/// Step changes and the sheet's resize both use `animation`, so set `step` directly
-/// rather than inside `withAnimation`. Pass `nil` to change steps and resize immediately.
+/// Change `step` directly, not inside `withAnimation`. The flow uses `animation` for
+/// both the step transition and the resize, so they stay in sync.
+///
+/// The flow sits in a `NavigationStack`, so each step can set its own title and
+/// toolbar. Step content blurs between steps, while the footer updates in place.
+///
+/// - Important: Don't set `presentationDetents(_:)` on the content.
 struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: View {
+    /// The step to show.
     let step: Step
+
+    /// Animates step changes and resizing. Pass `nil` to disable.
     var animation: Animation? = .snappy
+
+    /// The content for each step. Scrolls if it doesn't fit.
     @ContentBuilder let content: (Step) -> StepContent
+
+    /// A view pinned below the content. It persists across steps, so one button can
+    /// change its title and action.
     @ContentBuilder let footer: (Step) -> FooterContent
 
     var body: some View {

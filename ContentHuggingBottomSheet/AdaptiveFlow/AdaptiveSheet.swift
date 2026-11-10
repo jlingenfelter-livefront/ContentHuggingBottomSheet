@@ -7,10 +7,35 @@
 
 import SwiftUI
 
-/// Scrolling sheet content with an optional pinned footer, sized to fit both.
+/// Sheet content with an optional pinned footer, sized to fit its content.
+///
+/// Content that is too tall for the available space scrolls beneath the footer. Until the content,
+/// is measured the sheet uses the medium and large detents. Medium and large detents will also
+/// be used if the content does not have an intrinsic height.
+///
+/// Place `AdaptiveSheet` in a `NavigationStack`. It doesn't create one, so it can be
+/// pushed onto an existing stack. Set the background color on the stack so it fills
+/// the safe areas:
+///
+/// ```swift
+/// NavigationStack {
+///     AdaptiveSheet(animation: .snappy) {
+///         content
+///     }
+/// }
+/// .background(.blue)
+/// ```
+///
+/// - Important: Don't set `presentationDetents(_:)` on the content.  Detents are
+/// handled internally.
 struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
+    /// Animates height changes. Pass `nil` to disable.
     let animation: Animation?
+
+    /// The sheet's content. Scrolls if it doesn't fit.
     @ContentBuilder let sheetContent: () -> SheetContent
+
+    /// A view pinned below the content.
     @ContentBuilder let footerContent: () -> FooterContent
 
     @State private var contentHeight: CGFloat?
@@ -25,6 +50,12 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         return contentHeight + topInsetHeight + footerHeight
     }
 
+    /// Creates a content-hugging sheet with a pinned footer.
+    ///
+    /// - Parameters:
+    ///   - animation: Animates height changes. Pass `nil` to disable.
+    ///   - sheetContent: The sheet's content. Scrolls if it doesn't fit.
+    ///   - footerContent: A view pinned below the content.
     init(
         animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent,
@@ -35,6 +66,11 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         self.footerContent = footerContent
     }
 
+    /// Creates a content-hugging sheet without a footer.
+    ///
+    /// - Parameters:
+    ///   - animation: Animates height changes. Pass `nil` to disable.
+    ///   - sheetContent: The sheet's content. Scrolls if it doesn't fit.
     init(
         animation: Animation?,
         @ContentBuilder sheetContent: @escaping () -> SheetContent
@@ -64,8 +100,6 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         }, action: { newValue in
             topInsetHeight = newValue.rounded()
         })
-        // Before the content is measured, the total is just the inset and footer, which
-        // change with the sheet's size; sizing to them causes a cyclic layout
         .modifier(AnimatedHeightDetent(height: totalHeight ?? 0))
         // A large title collapsing on scroll would shrink the top inset and jerk the sheet
         .navigationBarTitleDisplayMode(.inline)
