@@ -18,9 +18,19 @@ extension Backport where Content: View {
         @ViewBuilder content: () -> BarContent
     ) -> some View {
         if #available(iOS 26.0, *) {
-            self.content.safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaBar(
+                edge: edge,
+                alignment: alignment,
+                spacing: spacing,
+                content: content
+            )
         } else {
-            self.content.safeAreaInset(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaInset(
+                edge: edge,
+                alignment: alignment,
+                spacing: spacing,
+                content: content
+            )
         }
     }
 
@@ -34,9 +44,19 @@ extension Backport where Content: View {
         @ViewBuilder content: () -> BarContent
     ) -> some View {
         if #available(iOS 26.0, *) {
-            self.content.safeAreaBar(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaBar(
+                edge: edge,
+                alignment: alignment,
+                spacing: spacing,
+                content: content
+            )
         } else {
-            self.content.safeAreaInset(edge: edge, alignment: alignment, spacing: spacing, content: content)
+            self.content.safeAreaInset(
+                edge: edge,
+                alignment: alignment,
+                spacing: spacing,
+                content: content
+            )
         }
     }
 }

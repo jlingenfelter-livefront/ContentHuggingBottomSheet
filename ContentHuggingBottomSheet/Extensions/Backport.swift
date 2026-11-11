@@ -22,7 +22,7 @@ import SwiftUI
 ///
 /// ```
 /// extension Backport where Content: View {
-///     @ViewBuilder func backgroundColor(_ color: Color) -> some View {
+///     @ContentBuilder func backgroundColor(_ color: Color) -> some View {
 ///         if #available(iOS 16, *) {
 ///             content.backgroundColor(color)
 ///         } else {
