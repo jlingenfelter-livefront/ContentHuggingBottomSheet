@@ -57,7 +57,7 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
     ///   - content: The sheet's content. Scrolls if it doesn't fit.
     ///   - footer: A view pinned below the content.
     init(
-        animation: Animation?,
+        animation: Animation? = .snappy,
         @ContentBuilder content: @escaping () -> SheetContent,
         @ContentBuilder footer: @escaping () -> FooterContent
     ) {
@@ -72,7 +72,7 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
     ///   - animation: Animates height changes. Pass `nil` to disable.
     ///   - content: The sheet's content. Scrolls if it doesn't fit.
     init(
-        animation: Animation?,
+        animation: Animation? = .snappy,
         @ContentBuilder content: @escaping () -> SheetContent
     ) where FooterContent == EmptyView {
         self.animation = animation
