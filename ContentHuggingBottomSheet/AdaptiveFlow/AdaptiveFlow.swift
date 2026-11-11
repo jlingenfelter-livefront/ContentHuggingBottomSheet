@@ -43,6 +43,7 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
             } footerContent: {
                 // Keeps its identity across steps, so it updates in place
                 footer(step)
+                    .transition(.blurReplace)
             }
             .animation(animation, value: step)
         }
