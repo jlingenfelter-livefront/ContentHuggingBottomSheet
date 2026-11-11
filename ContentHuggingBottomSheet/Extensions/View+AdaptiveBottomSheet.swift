@@ -7,49 +7,6 @@
 
 import SwiftUI
 
-/// Presents `AdaptiveSheetContent` in a sheet, inside a `NavigationStack`.
-private struct AdaptiveBottomSheetModifier<SheetContent: View, FooterContent: View>: ViewModifier {
-    @Binding var isPresented: Bool
-    let animation: Animation?
-    @ContentBuilder let sheetContent: () -> SheetContent
-    @ContentBuilder let footerContent: () -> FooterContent
-
-    init(
-        isPresented: Binding<Bool>,
-        animation: Animation?,
-        @ContentBuilder sheetContent: @escaping () -> SheetContent,
-        @ContentBuilder footerContent: @escaping () -> FooterContent
-    ) {
-        _isPresented = isPresented
-        self.animation = animation
-        self.sheetContent = sheetContent
-        self.footerContent = footerContent
-    }
-
-    init(
-        isPresented: Binding<Bool>,
-        animation: Animation?,
-        @ContentBuilder sheetContent: @escaping () -> SheetContent
-    ) where FooterContent == EmptyView {
-        _isPresented = isPresented
-        self.animation = animation
-        self.sheetContent = sheetContent
-        self.footerContent = { EmptyView() }
-    }
-
-    func body(content: Content) -> some View {
-        content.sheet(isPresented: $isPresented) {
-            NavigationStack {
-                AdaptiveSheet(
-                    animation: animation,
-                    sheetContent: sheetContent,
-                    footerContent: footerContent
-                )
-            }
-        }
-    }
-}
-
 extension View {
     /// Presents a sheet whose height fits its content and animates as the content resizes.
     ///
@@ -68,18 +25,22 @@ extension View {
     ///   - animation: The animation for the sheet's height changes. Match the animation
     ///     the content resizes with, so the sheet and content move together. Pass `nil`
     ///     to resize the sheet immediately.
+    ///   - onDismiss: The closure to execute when dismissing the sheet.
     ///   - content: The sheet's content.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         animation: Animation? = .snappy,
+        onDismiss: (() -> Void)? = nil,
         @ContentBuilder content: @escaping () -> some View
     ) -> some View {
-        self.modifier(
-            AdaptiveBottomSheetModifier(
-                isPresented: isPresented,
-                animation: animation,
-                sheetContent: content)
-        )
+        self.sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            NavigationStack {
+                AdaptiveSheet(
+                    animation: animation,
+                    sheetContent: content
+                )
+            }
+        }
     }
 
     /// Presents a sheet whose height fits its content and footer, and animates as they resize.
@@ -98,22 +59,25 @@ extension View {
     ///   - animation: The animation for the sheet's height changes. Match the animation
     ///     the content and footer resize with, so the sheet and content move together.
     ///     Pass `nil` to resize the sheet immediately.
+    ///   - onDismiss: The closure to execute when dismissing the sheet.
     ///   - content: The sheet's content. Scrolls if it doesn't fit.
     ///   - footer: A view pinned to the bottom of the sheet, such as a primary button.
     func adaptiveBottomSheet(
         isPresented: Binding<Bool>,
         animation: Animation? = .snappy,
+        onDismiss: (() -> Void)? = nil,
         @ContentBuilder content: @escaping () -> some View,
         @ContentBuilder footer: @escaping () -> some View,
     ) -> some View {
-        self.modifier(
-            AdaptiveBottomSheetModifier(
-                isPresented: isPresented,
-                animation: animation,
-                sheetContent: content,
-                footerContent: footer
-            )
-        )
+        self.sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            NavigationStack {
+                AdaptiveSheet(
+                    animation: animation,
+                    sheetContent: content,
+                    footerContent: footer,
+                )
+            }
+        }
     }
 }
 
