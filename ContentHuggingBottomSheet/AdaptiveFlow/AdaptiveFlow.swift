@@ -21,7 +21,7 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
     let step: Step
 
     /// Animates step changes and resizing. Pass `nil` to disable.
-    var animation: Animation? = .snappy
+    let animation: Animation?
 
     /// The content for each step. Scrolls if it doesn't fit.
     @ContentBuilder let content: (Step) -> StepContent
@@ -29,6 +29,43 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
     /// A view pinned below the content. It persists across steps, so one button can
     /// change its title and action.
     @ContentBuilder let footer: (Step) -> FooterContent
+
+    /// Creates a multistep sheet with a pinned footer.
+    ///
+    /// - Parameters:
+    ///   - step: The step to show.
+    ///   - animation: Animates step changes and resizing. Pass `nil` to disable.
+    ///   - content: The content for each step. Scrolls if it doesn't fit.
+    ///   - footer: A view pinned below the content. It persists across steps,
+    ///     so one button can change its title and action.
+    init(
+        step: Step,
+        animation: Animation? = .snappy,
+        @ContentBuilder content: @escaping (Step) -> StepContent,
+        @ContentBuilder footer: @escaping (Step) -> FooterContent
+    ) {
+        self.step = step
+        self.animation = animation
+        self.content = content
+        self.footer = footer
+    }
+
+    /// Creates a multistep sheet without a footer.
+    ///
+    /// - Parameters:
+    ///   - step: The step to show.
+    ///   - animation: Animates step changes and resizing. Pass `nil` to disable.
+    ///   - content: The content for each step. Scrolls if it doesn't fit.
+    init(
+        step: Step,
+        animation: Animation? = .snappy,
+        @ContentBuilder content: @escaping (Step) -> StepContent
+    ) where FooterContent == EmptyView {
+        self.step = step
+        self.animation = animation
+        self.content = content
+        self.footer = { _ in EmptyView() }
+    }
 
     var body: some View {
         NavigationStack {
@@ -40,7 +77,7 @@ struct AdaptiveFlow<Step: Hashable, StepContent: View, FooterContent: View>: Vie
                         .id(step)
                         .transition(.blurReplace)
                 }
-            } footerContent: {
+            } footer: {
                 // Keeps its identity across steps, so it updates in place
                 footer(step)
                     .transition(.blurReplace)

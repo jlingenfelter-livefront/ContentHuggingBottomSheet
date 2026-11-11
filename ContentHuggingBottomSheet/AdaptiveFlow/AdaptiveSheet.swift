@@ -33,10 +33,10 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
     let animation: Animation?
 
     /// The sheet's content. Scrolls if it doesn't fit.
-    @ContentBuilder let sheetContent: () -> SheetContent
+    @ContentBuilder let content: () -> SheetContent
 
     /// A view pinned below the content.
-    @ContentBuilder let footerContent: () -> FooterContent
+    @ContentBuilder let footer: () -> FooterContent
 
     @State private var contentHeight: CGFloat?
     @State private var topInsetHeight: CGFloat?
@@ -54,35 +54,35 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
     ///
     /// - Parameters:
     ///   - animation: Animates height changes. Pass `nil` to disable.
-    ///   - sheetContent: The sheet's content. Scrolls if it doesn't fit.
-    ///   - footerContent: A view pinned below the content.
+    ///   - content: The sheet's content. Scrolls if it doesn't fit.
+    ///   - footer: A view pinned below the content.
     init(
         animation: Animation?,
-        @ContentBuilder sheetContent: @escaping () -> SheetContent,
-        @ContentBuilder footerContent: @escaping () -> FooterContent
+        @ContentBuilder content: @escaping () -> SheetContent,
+        @ContentBuilder footer: @escaping () -> FooterContent
     ) {
         self.animation = animation
-        self.sheetContent = sheetContent
-        self.footerContent = footerContent
+        self.content = content
+        self.footer = footer
     }
 
     /// Creates a content-hugging sheet without a footer.
     ///
     /// - Parameters:
     ///   - animation: Animates height changes. Pass `nil` to disable.
-    ///   - sheetContent: The sheet's content. Scrolls if it doesn't fit.
+    ///   - content: The sheet's content. Scrolls if it doesn't fit.
     init(
         animation: Animation?,
-        @ContentBuilder sheetContent: @escaping () -> SheetContent
+        @ContentBuilder content: @escaping () -> SheetContent
     ) where FooterContent == EmptyView {
         self.animation = animation
-        self.sheetContent = sheetContent
-        self.footerContent = { EmptyView() }
+        self.content = content
+        self.footer = { EmptyView() }
     }
 
     var body: some View {
         ScrollView {
-            sheetContent()
+            content()
                 .measuringAnimatedValue(\.height, in: .local, assign: $contentHeight, animation: animation)
         }
         .scrollBounceBehavior(.basedOnSize)
@@ -90,7 +90,7 @@ struct AdaptiveSheet<SheetContent: View, FooterContent: View>: View {
         // under the footer, which would make the edge effect flicker
         .backport.scrollEdgeEffectHidden(true, for: .bottom)
         .backport.safeAreaBar(edge: .bottom, spacing: 0) {
-            footerContent()
+            footer()
                 // Prevents an empty view or a view lacking an intrinsic size from stretching vertically to fill the the available space
                 .fixedSize(horizontal: false, vertical: true)
                 .measuringAnimatedValue(\.height, in: .local, assign: $footerHeight, animation: animation)
@@ -138,10 +138,10 @@ private struct AnimatedHeightDetent: ViewModifier {
         NavigationStack {
             AdaptiveSheet(
                 animation: .snappy,
-                sheetContent: {
+                content: {
                     PreviewSheetContent()
                 },
-                footerContent: {
+                footer: {
                     Button("Close") {
                         isPresentingSheet = false
                     }

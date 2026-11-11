@@ -7,27 +7,6 @@
 
 import SwiftUI
 
-/// Presents an `AdaptiveFlow` in a sheet.
-private struct AdaptiveFlowModifier<Step: Hashable, StepContent: View, FooterContent: View>: ViewModifier {
-    @Binding var isPresented: Bool
-    let step: Step
-    let animation: Animation?
-    let onDismiss: (() -> Void)?
-    @ContentBuilder let stepContent: (Step) -> StepContent
-    @ContentBuilder let footerContent: (Step) -> FooterContent
-
-    func body(content: Content) -> some View {
-        content.sheet(isPresented: $isPresented, onDismiss: onDismiss) {
-            AdaptiveFlow(
-                step: step,
-                animation: animation,
-                content: stepContent,
-                footer: footerContent
-            )
-        }
-    }
-}
-
 extension View {
     /// Presents a sheet that steps through content, fitting its height to each step
     /// and animating between them.
@@ -59,16 +38,50 @@ extension View {
         @ContentBuilder content: @escaping (Step) -> some View,
         @ContentBuilder footer: @escaping (Step) -> some View
     ) -> some View {
-        modifier(
-            AdaptiveFlowModifier(
-                isPresented: isPresented,
+        self.sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            AdaptiveFlow(
                 step: step,
                 animation: animation,
-                onDismiss: onDismiss,
-                stepContent: content,
-                footerContent: footer
+                content: content,
+                footer: footer
             )
-        )
+        }
+    }
+
+    /// Presents a sheet that steps through content, fitting its height to each step
+    /// and animating between them.
+    ///
+    /// Pass the current step from your own state and change that state directly; the
+    /// content transition and the sheet's resize both use `animation`, so they move
+    /// together. The content is in a `NavigationStack`, so each step can set a
+    /// navigation title and toolbar, such as a back button.
+    ///
+    /// - Important:`presentationDetents(_:)` should NOT be set on the content. This method
+    /// handles measuring the content and setting the detents internally.
+    ///
+    /// - Parameters:
+    ///   - isPresented: Whether the sheet is presented.
+    ///   - step: The current step. The flow only reads it, so reset the state it comes
+    ///     from in `onDismiss` to start the next presentation from the beginning.
+    ///   - animation: The animation for step changes and the sheet's height changes.
+    ///     Pass `nil` to change steps and resize the sheet immediately.
+    ///   - onDismiss: The closure to execute when dismissing the sheet, such as
+    ///     resetting `step` to the first step.
+    ///   - content: The content for each step. Scrolls if it doesn't fit.
+    func adaptiveFlow<Step: Hashable>(
+        isPresented: Binding<Bool>,
+        step: Step,
+        animation: Animation? = .snappy,
+        onDismiss: (() -> Void)? = nil,
+        @ContentBuilder content: @escaping (Step) -> some View
+    ) -> some View {
+        self.sheet(isPresented: isPresented, onDismiss: onDismiss) {
+            AdaptiveFlow(
+                step: step,
+                animation: animation,
+                content: content
+            )
+        }
     }
 }
 

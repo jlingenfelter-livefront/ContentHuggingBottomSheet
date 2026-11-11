@@ -37,7 +37,7 @@ extension View {
             NavigationStack {
                 AdaptiveSheet(
                     animation: animation,
-                    sheetContent: content
+                    content: content
                 )
             }
         }
@@ -73,8 +73,8 @@ extension View {
             NavigationStack {
                 AdaptiveSheet(
                     animation: animation,
-                    sheetContent: content,
-                    footerContent: footer,
+                    content: content,
+                    footer: footer,
                 )
             }
         }
