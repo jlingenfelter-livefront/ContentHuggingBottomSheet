@@ -55,7 +55,7 @@ struct PreviewNotificationFlow: View {
                 Text(current.footerTitle)
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
+            .buttonStyle(.backport(.glassProminent))
             .controlSize(.large)
             .disabled(current == .choose && selection.isEmpty)
             .scenePadding(.horizontal)

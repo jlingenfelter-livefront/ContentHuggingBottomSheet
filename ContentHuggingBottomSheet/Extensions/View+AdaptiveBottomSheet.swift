@@ -97,7 +97,7 @@ extension View {
                 Text("Turn On")
                     .frame(maxWidth: .infinity)
             }
-            .buttonStyle(.glassProminent)
+            .buttonStyle(.backport(.glassProminent))
             .controlSize(.large)
             .scenePadding(.horizontal)
         }

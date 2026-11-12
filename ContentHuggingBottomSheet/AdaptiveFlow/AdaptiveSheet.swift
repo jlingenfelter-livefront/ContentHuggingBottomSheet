@@ -145,7 +145,7 @@ private struct AnimatedHeightDetent: ViewModifier {
                     Button("Close") {
                         isPresentingSheet = false
                     }
-                    .buttonStyle(.glassProminent)
+                    .buttonStyle(.backport(.glassProminent))
                 }
             )
         }
